@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Modal from 'react-modal';
+import Tooltip from '../../tooltip';
+
 
 Modal.setAppElement('#root'); // Налаштування кореневого елемента для модального вікна
 
@@ -28,6 +30,7 @@ const CategoriesListPage: React.FC = () => {
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+    const [tooltipMessage, setTooltipMessage] = useState<string | null>(null);
 
     const openModal = (id: number) => {
         setSelectedCategoryId(id);
@@ -48,6 +51,7 @@ const CategoriesListPage: React.FC = () => {
             const result = await categoryService.delete(selectedCategoryId);
             if (result.status === 204) {
                 setTable(table.filter(x => x.id !== selectedCategoryId));
+                setTooltipMessage("Category deleted");
                 toast.update(toastId, { render: "Category deleted", type: "success", isLoading: false, autoClose: 5000 }); // Завершення прогрес-бару
             }
         } catch (error) {
@@ -150,6 +154,9 @@ const CategoriesListPage: React.FC = () => {
                 <button onClick={deleteCategory} className="bg-red-400 hover:bg-red-600 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">Delete</button>
                 <button onClick={closeModal} className="bg-gray-400 hover:bg-gray-600 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">Cancel</button>
             </Modal>
+            {tooltipMessage && (
+                <Tooltip message={tooltipMessage} onClose={() => setTooltipMessage(null)} />
+            )}
         </>
 
     )
